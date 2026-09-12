@@ -1,0 +1,845 @@
+;-------------------------------------------------------------------------------
+[Characters]
+ ;How to add characters
+ ;---------------------
+ ;Use the format:
+ ;    charname, stagefilename1, stagefilename2, ...
+ ;
+ ;e.g. For a player with filename "kfm", and stage filename
+ ;"stages/mybg.def" type (without the semicolon):
+ ;    kfm, stages/mybg.def
+ ;IKEMEN feature: There can be more than 1 stage assigned to character. In such
+ ;case stage will be chosen randomly.
+ ;
+ ;If you want to load a different def file, you can enter it as a directory plus
+ ;the def file. This example loads chars/kfm/alt-kfm.def:
+ ;    kfm/alt-kfm.def, stages/mybg.def
+ ;
+ ;If you put "random" as the stagefilename, then a random stage will be selected
+ ;for that player. e.g.
+ ;    kfm, random
+ ;IKEMEN feature: Unlike mugen, stage declaration (including random, which is
+ ;default assignment) can be skipped without affecting other parameters.
+ ;
+ ;Optional parameters should follow on the same line (except 'slot' parameter),
+ ;separated by commas. Each parameter has the form:
+ ;    paramname = paramvalue
+ ;where paramname is the name of the parameter type, and paramvalue is the value
+ ;(data) that should be assigned to that parameter.
+ ;With the exception of 'unlock' (which always has to be last parameter in line)
+ ;parameters can be assigned in any order (after char and stage declaration).
+ ;
+ ;The optional parameters are:
+ ;
+ ; - music<roundno>
+ ;   Set the paramvalue to the music file path that should be used at the start
+ ;   of round when facing this character. Music volume, loopstart and loopend
+ ;   values can follow, separated by spaces. paramvalue overrides stage DEF
+ ;   bgmusic assignment, so you can re-use the same stage with unique music for
+ ;   multiple characters.
+ ;   IKEMEN feature: Setting optional <roundno> (typed as number) decides round
+ ;   on which the music will be played (defaults to 1 if omitted). You can use
+ ;   multiple music parameters for random selection.
+ ;
+ ; - musicfinal
+ ;   IKEMEN feature: Set the paramvalue to the music file that should be used at
+ ;   the start of final round. Music volume, loopstart and loopend values can
+ ;   follow, separated by spaces. paramvalue overrides stage DEF bgmusic.final
+ ;   assignment. You can use multiple musicfinal parameters for random
+ ;   selection.
+ ;
+ ; - musiclife
+ ;   IKEMEN feature: Set the paramvalue to the music file path that should be
+ ;   used when player's controlled character has (by default) less then 30% life
+ ;   during deciding round (only affects side that is at risk of being defeated)
+ ;   when facing this character. Further adjustments available via stage DEF
+ ;   file. Music volume, loopstart and loopend values can follow, separated by
+ ;   spaces. paramvalue overrides stage DEF bgmusic.life assignment. You can use
+ ;   multiple musiclife parameters for random selection.
+ ;
+ ; - musicvictory
+ ;   IKEMEN feature: Set the paramvalue to the music file that should start
+ ;   right after this character scores final round K.O. and continue throughout
+ ;   the victory screen. Music volume, loopstart and loopend values can follow,
+ ;   separated by spaces. paramvalue overrides stage DEF bgmusic.victory
+ ;   assignment. You can use multiple musicvictory parameters for random
+ ;   selection. Unlike other music character parameters, musicvictory also works
+ ;   in Versus type modes.
+ ;
+ ; - ai
+ ;   IKEMEN feature: Set the paramvalue between 1 and 8 to force AI Level
+ ;   regardless of difficulty and AI ramping settings.
+ ;
+ ; - vsscreen
+ ;   IKEMEN feature: Set the paramvalue to 0 to avoid displaying versus screen
+ ;   when facing this character.
+ ;
+ ; - victoryscreen
+ ;   IKEMEN feature: Set the paramvalue to 0 to avoid displaying victory screen
+ ;   when this character wins a match.
+ ;
+ ; - rounds
+ ;   IKEMEN feature: Set the paramvalue to the number of rounds in order to
+ ;   overwrite rounds number chosen in the settings.
+ ;
+ ; - time
+ ;   IKEMEN feature: Set the paramvalue to the time (in seconds) in order to
+ ;   overwrite round time chosen in the settings.
+ ;
+ ; - single
+ ;   IKEMEN feature: Set the paramvalue to 1 to force facing this character
+ ;   individually in team modes.
+ ;
+ ; - includestage
+ ;   Set the paramvalue to 0 to avoid including this stage in the stage select
+ ;   list (in VS, training modes, etc). The stage is also blocked from being
+ ;   randomly selected for a match.
+ ;   IKEMEN feature: Setting paramvalue to -1 prevents stage from being randomly
+ ;   selected for a match, while still allowing you to choose it from the stage
+ ;   select list.
+ ;
+ ; - bonus
+ ;   IKEMEN feature: Set the paramvalue to 1 to include this character in "Bonus
+ ;   Games" mode. At least 1 character needs this parameter for the mode to show
+ ;   up in modes selection menu.
+ ;
+ ; - exclude
+ ;   IKEMEN feature: Set the paramvalue to 1 to avoid including this character
+ ;   in 'rows' and 'columns' screenpack selection grid. (similar result as
+ ;   hiding unselectable AI only characters in mugen without need to create tons
+ ;   of unnecessary select.def slots to do so). Excluded characters are not
+ ;   added to randomselect pool and won't show up in VS 100 Kumite mode.
+ ;
+ ; - hidden
+ ;   IKEMEN feature: Set the paramvalue to hide a character:
+ ;   1: cursor can move to this cell, cursor, face and face background are not
+ ;      rendered (same result as hiding selectable characters in mugen by
+ ;      placing them outside visible grid, but without need to create lots of
+ ;      unnecessary select.def slots to do so),
+ ;   2: cell can't be selected, art is not rendered (slot is ignored until
+ ;      character is unlocked).
+ ;   3: cell behaves like randomselect slot until character is unlocked
+ ;
+ ; - order
+ ;   Set the paramvalue to the ordering priority to give the character in
+ ;   Arcade and Time Attack modes. A smaller value means you will fight the
+ ;   character sooner (excluding 'ratio' Arcade mode, which allows more ordering
+ ;   flexibility via 'arcade.ratiomatches' settings). The default order value is
+ ;   1, if you omit this param. Edit *.maxmatches settings under [Options] to
+ ;   customize amount of matches per order priority.
+ ;   IKEMEN feature: Max 30 orders mugen limitation is lifted. Negative order
+ ;   is reversed if character becomes unlocked (see 'unlock' parameter)
+ ;
+ ; - ordersurvival
+ ;   IKEMEN feature: Set the paramvalue to the ordering priority to give the
+ ;   character in survival mode. The default order value is 1, if you omit this
+ ;   param. It works like 'order' parameter, just for different game modes
+ ;   (survival / survival co-op / netplay survival co-op). To exclude character
+ ;   from showing up in survival modes you can set it to order group outside
+ ;   configured survival.maxmatches range (e.g. ordersurvival=0) Negative order
+ ;   is reversed if character becomes unlocked (see 'unlock' parameter)
+ ;
+ ; - arcadepath
+ ;   IKEMEN feature: Set the paramvalue to the lua file (file path relative to
+ ;   game directory) containing custom arcade path. This parameter makes the
+ ;   character ignore default *.maxmatches settings under [Options] section and
+ ;   use arcade path coded entirely in lua, which allows implementing
+ ;   functionality normally not possible in mugen (rival matches, branching
+ ;   paths, secret bosses etc.)
+ ;   https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-Info#arcs
+ ;
+ ; - ratiopath
+ ;   IKEMEN feature: Like 'arcadepath', but used only if the p2 team mode has
+ ;   been set to 'ratio'. If not assigned, ratio team mode arcade run defaults
+ ;   to 'arcade.ratiomatches' settings.
+ ;
+ ; - slot
+ ;   IKEMEN feature: Slot parameter, which allows to assign multiple characters
+ ;   into a single select screen slot, uses special syntax: declaration starts
+ ;   with a line containing only 'slot = {'. The next and following lines have
+ ;   characters added using the standard syntax. Closing '}' bracket in a new
+ ;   line ends current slot declaration. Characters added this way can have few
+ ;   extra parameters assigned:
+ ;   - select: Set the paramvalue to the command that selects this character.
+ ;     If multiple chars in this slot have the same paramvalue assigned, they
+ ;     will be selected randomly.
+ ;   - next: Set the paramvalue to the command that swaps the current slot
+ ;     character with the next character that shares the same paramvalue.
+ ;   - previous: Set the paramvalue to the command that swaps the current slot
+ ;     character with the previous character that shares the same paramvalue.
+ ;   Commands use the same syntax as mugen CMD files (comma is permitted)
+ ;
+ ; - unlock
+ ;   IKEMEN feature: paramvalue is executed as Lua code condition, right after
+ ;   new game mode is initiated and upon returning to main menu. If it evaluates
+ ;   to boolean 'true' the character locked via 'hidden' parameter will become
+ ;   selectable. On 'false' it will be hidden. Due to parameters syntax,
+ ;   'unlock' has to be the very last parameter used in line (everything that
+ ;   follows is treated as a pure Lua code). Default: true (if character is not
+ ;   hidden, otherwise: false)
+ ;   https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-Info#lua_unlock
+ ;
+ ;You can also add a randomize icon to the select screen. To do this, put the
+ ;word "randomselect" on a line of its own, with no extra parameters.
+ ;
+ ;Examples:
+ ; kfm, stages/mybg.def, includestage=0
+ ; kfm, stages/mybg.def, arcadepath=data/arcade.lua
+ ; kfm, stages/mybg.def, music=sound/song.mp3, order=3, ai=8, hidden=2
+ ; slot = {
+ ;      kfm, stages/mybg.def, previous=d, next=w
+ ;      SuaveDude, previous=d, next=w, select=/s+a
+ ; }
+ ;
+ ;Insert your characters below.
+
+;PART 1
+slot = {
+    Part 1/Jonathan/Jonathan.def, order = 1, previous=d, next=w
+    Bonus/Jonathan (HFTF)/Jonathan (HFTF).def, order = 1, previous=d, next=w, 
+    Bonus/Jonathan (MvC)/Jonathan (MvC).def, order = 1, previous=d, next=w,
+}
+Part 1/William Zeppeli/William Zeppeli.def, order = 1
+Part 1/Wang Chan/Wang Chan.def, order = 1
+Part 1/Dio Brando/Dio Brando.def, order = 1
+
+;PART 2
+slot = {
+    Part 2/Joseph/Joseph.def, order = 1, previous=d, next=w
+    Bonus/Joesph (Deaged)/Joesph (Deaged).def, order = 1, previous=d, next=w
+    Bonus/Joseph (Adult)/Joseph (Adult).def, order = 1, previous=d, next=w
+    HFTF/Joseph (HFTF)/Joseph (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+    Bonus/Kid Joseph/Kid Joseph.def, order = 1, previous=d, next=w
+}
+slot = {
+    Part 2/Caesar/Caesar.def, order = 1
+    Bonus/Alt Caesar/ Alt Caesar.def, order = 1, previous=d, next=w
+}
+slot = {
+    Part 2/Lisa Lisa/Lisa Lisa.def, order = 1, previous=d, next=w
+    Bonus/Masked Lisa Lisa/Masked Lisa Lisa.def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 2/Commander Stroheim/Commander Stroheim.def, order = 1, previous=d, next=w
+    Bonus/Overdrive Stroheim/Overdrive Stroheim.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 2/Santana/Santana.def, order = 1
+Part 2/Kars/Kars.def, order = 1
+slot = {
+    Part 2/Ultimate Kars/Ultimate Kars.def, order = 1, previous=d, next=w
+    Bonus/Ultimate Kars (GJ)/Ultimate Kars (GJ).def, order = 1, previous=d, next=w, select=/s+a
+}
+
+;PART 3
+slot = {
+    Part 3/Jotaro/Jotaro.def, order = 1, previous=d, next=w
+    Part 4/Jotaro P4/Jotaro P4.def, order = 1, previous=d, next=w
+    Part 6/Jotaro P6/Jotaro P6.def, order = 1, previous=d, next=w
+    Bonus/Kid Jotaro/Kid Jotaro.def, order = 1, previous=d, next=w
+    Bonus/Alt Jotaro/Alt Jotaro.def, order = 1, previous=d, next=w
+    HFTF/Jotaro (HFTF)/Jotaro (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Old Joseph/Old Joseph.def, order = 1, previous=d, next=w
+    HFTF/Old Joseph (HFTF)/Old Joseph (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Avdol/Avdol.def, order = 1, order = 1, previous=d, next=w
+    HFTF/Avdol (HFTF)/Avdol (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Kakyoin/Kakyoin.def, order = 1, previous=d, next=w
+    HFTF/Kakyoin (HFTF)/Kakyoin (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/New Kakyoin/New Kakyoin.def, order = 1, previous=d, next=w
+    HFTF/New Kakyoin (HFTF)/New Kakyoin (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Polnareff/Polnareff.def, order = 1, previous=d, next=w
+    Part 5/Polnareff P5/Polnareff P5.def, order = 1, previous=d, next=w
+    Bonus/Kid Polnareff/Kid Polnareff.def, order = 1, previous=d, next=w
+    HFTF/Polnareff (HFTF)/Polnareff (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Iggy/Iggy.def, order = 1, order = 1, previous=d, next=w
+    HFTF/Iggy (HFTF)/Iggy (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Tower Of Gray/Tower Of Gray.def, order = 1, previous=d, next=w
+    Part 3/Gray Fly/Gray Fly.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 3/Imposter Captain Tennille/Imposter Captain Tennille.def, order = 1
+slot = {
+    Part 3/Devo/Devo.def, order = 1, order = 1, order = 1, previous=d, next=w
+    HFTF/Devo (HFTF)/Devo (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 3/Rubber Soul/Rubber Soul.def, order = 1, previous=d, next=w
+    Part 3/Rubber Soul (Disguised)/Rubber Soul (Disguised).def, order = 1, previous=d, next=w
+    HFTF/Rubber Soul (HFTF)/Rubber Soul (HFTF).def, order = 1, previous=d, next=w, select=/s+a   
+}
+slot = {
+    Part 3/Hol Horse/Hol Horse.def, order = 1, previous=d, next=w
+    Bonus/Hol Horse (ASB)/Hol Horse (ASB).def, order = 1, previous=d, next=w
+    Bonus/The Hol Team/The Hol Team.def, order = 1, previous=d, next=w
+    Bonus/Ultimate Hol/Ultimate Hol.def, order = 1, previous=d, next=w
+    HFTF/Hol Horse (HFTF)/Hol Horse (HFTF).def, order = 1, previous=d, next=w, select=/s+a 
+
+}
+slot = {
+    Part 3/Hol Horse and Boingo/Hol Horse and Boingo.def, order = 1, previous=d, next=w
+    Bonus/The Hol Team/The Hol Team.def, order = 1, previous=d, next=w
+    HFTF/Hol Horse (HFTF)/Hol & Boingo (HFTF).def, order = 1, previous=d, next=w, select=/s+a 
+}
+Part 3/Enya/Enya.def, order = 1
+slot = {
+    Part 3/Steely Dan/Steely Dan.def, order = 1, previous=d, next=w
+    Bonus/Alt Steely Dan/Alt Steely Dan.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 3/Death Thirteen/Death Thirteen.def, order = 1
+Part 3/Judgement/Judgement.def, order = 1
+slot = {
+    Part 3/Midler/Midler.def, order = 1, previous=d, next=w  
+    Bonus/Kid Midler/Kid Midler.def, order = 1, previous=d, next=w
+    HFTF/Midler (HFTF)/Midler (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 3/N'doul/N'doul.def, order = 1
+Part 3/Oingo and Boingo/Oingo and Boingo.def, order = 1
+slot = {
+    Part 3/Chaka/Chaka.def, order = 1, previous=d, next=w
+    Bonus/Kid Anubis/Kid Anubis.def, order = 1, previous=d, next=w
+    HFTF/Chaka (HFTF)/Chaka (HFTF).def, order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Khan/Khan.def, order = 1, previous=d, next=w
+    Bonus/Khan (MvC)/Khan (MvC).def, order = 1, previous=d, next=w
+    HFTF/Khan (HFTF)/Khan (HFTF).def, order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Black Polnareff/Black Polnareff.def, order = 1, previous=d, next=w
+    HFTF/Black Polnareff (HFTF)/Black Polnareff (HFTF).def, order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Mariah/Mariah.def, order = 1, previous=d, next=w
+    HFTF/Mariah (HFTF)/Mariah (HFTF), order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Alessi/Alessi.def, order = 1, previous=d, next=w
+    HFTF/Alessi (HFTF)/Alessi (HFTF).def, order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Pet Shop/Pet Shop.def, order = 1, previous=d, next=w
+    HFTF/Pet Shop (HFTF)/Pet Shop (HFTF).def, order = 1, previous=d, next=w, select=/s+a  
+}
+slot = {
+    Part 3/Vanilla Ice/Vanilla Ice.def, order = 1, previous=d, next=w
+    Bonus/Ultimate Vanilla Ice/Ultimate Vanilla Ice.def, order = 1, previous=d, next=w 
+    HFTF/Vanilla Ice (HFTF)/Vanilla Ice (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+    Bonus/Kid Vanilla Ice/Kid Vanilla Ice.def, order = 1, previous=d, next=w 
+}
+Part 3/Nukesaku/Nukesaku.def, order = 1
+slot = {
+    Part 3/Shadow DIO/Shadow DIO.def, order = 1, previous=d, next=w
+    Bonus/Shadow Jotaro/Shadow Jotaro.def, order = 1, previous=d, next=w
+    Bonus/Shadow DIO (MvC)/Shadow DIO (MvC).def, order = 1, previous=d, next=w
+    HFTF/Shadow DIO (HFTF)/Shadow DIO (HFTF).def, order = 1, previous=d, next=w, select=/s+a 
+}
+slot = {
+    Part 3/DIO/DIO.def, order = 1, previous=d, next=w
+    Bonus/Hidden DIO (Skin)/Hidden DIO (Skin).def, order = 1, previous=d, next=w
+    Bonus/DIO P6 (Skin)/DIO P6 (Skin).def, previous=d, next=w
+    Bonus/Mysterious DIO/Mysterious DIO.def, order = 1, previous=d, next=w
+    HFTF/DIO (HFTF)/DIO (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+
+    Part 3/Final DIO/Final DIO.def, order = 1, previous=d, next=w
+    Bonus/Mixed DIO/Mixed DIO.def, order = 1, previous=d, next=w
+    Bonus/Ultimate DIO/Ultimate DIO.def, order = 1, previous=d, next=w
+    HFTF/Final DIO (HFTF)/Final DIO (HFTF).def, order = 1, previous=d, next=w, select=/s+a
+}
+
+;PART 4
+slot = {
+    Part 4/Josuke/Josuke.def, order = 1, previous=d, next=w
+    Bonus/Early Josuke/Early Josuke.def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 4/Koichi/Koichi.def, order = 1, previous=d, next=w
+    Bonus/Alt Koichi/Alt Koichi.def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 4/Okuyasu/Okuyasu.def, order = 1, previous=d, next=w
+    Bonus/Alt Okuyasu/Alt Okuyasu.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 4/Keicho/Keicho.def, order = 1
+slot = {
+    Part 4/Yukako/Yukako.def, order = 1
+    Bonus/Gorgeous Irene/Gorgeous Irene.def, order = 1, previous=d, next=w
+}
+Part 4/Rohan/Rohan.def, order = 1
+Part 4/Bug Eaten/Bug Eaten.def, order = 1
+Part 4/Terunosuke/Terunosuke.def, order = 1
+slot = {
+    Part 4/Kira/Kira.def, order = 1, previous=d, next=w
+    Bonus/Heart Attack Kira/Heart Attack Kira.def, order = 1, previous=d, next=w, select=/s+a
+    Bonus/Alt Kira/Alt Kira.def, order = 1, previous=d, next=w
+}
+slot = {
+    Part 4/Kosaku/Kosaku.def, order = 1, previous=d, next=w
+    Bonus/Alt Kosaku/Alt Kosaku.def, order = 1, previous=d, next=w, select=/s+a
+}
+
+;PART 5
+slot = {
+    Part 5/Giorno/Giorno.def, order = 1, previous=d, next=w
+    Bonus/Giorno (GE)/Giorno (GE).def, order = 1, previous=d, next=w
+    Bonus/Requiem Giorno/Requiem Giorno.def, order = 1, previous=d, next=w
+    Bonus/Life Giver Giorno/Life Giver Giorno.def, order = 1, previous=d, next=w
+    Bonus/Giorno (MvC)/Giorno (MvC).def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 5/Bruno/Bruno.def, order = 1, previous=d, next=w
+    Bonus/Bruno (Body Swapped)/Bruno (Body Swapped).def, previous=d, next=w, select=/s+a
+    Bonus/Alt Bruno/Alt Bruno.def, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 5/Abbacchio/Abbacchio.def, order = 1, previous=d, next=w
+    Bonus/Moody Blues/Moody Blues.def, order = 1, previous=d, next=w, select=/s+a
+}
+slot = {
+    Part 5/Mista/Mista.def, order = 1, previous=d, next=w
+    Bonus/Team Mista/Team Mista.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 5/Narancia/Narancia.def, order = 1
+Part 5/Fugo/Fugo.def, order = 1
+Part 5/Trish/Trish.def, order = 1
+Part 5/Prosciutto/Prosciutto.def, order = 1
+Part 5/Ghiaccio/Ghiaccio.def, order = 1
+Part 5/Notorious Big/Notorious Big.def, order = 1
+Part 5/Risotto/Risotto.def, order = 1
+Part 5/Secco/Secco.def, order = 1
+slot = {
+    Part 5/Diavolo/Diavolo.def, order = 1, previous=d, next=w
+    Part 5/The Boss/The Boss.def, order = 1, previous=d, next=w, select=/s+a
+}
+
+;PART 6
+Part 6/Jolyne/Jolyne.def, order = 1
+Part 6/Emporio/Emporio.def, order = 1
+Part 6/Weather/Weather.def, order = 1
+Part 6/Kenzo/Kenzo.def, order = 1
+Part 6/Pucci/Pucci.def, order = 1
+Part 6/DIO P6/DIO P6.def, order = 1
+
+;PART 7
+Part 7/Johnny/Johnny.def, order = 1, previous=d, next=w
+slot = {
+    Part 7/AU Diego/AU Diego.def, order = 1, previous=d, next=w
+    Bonus/Alt AU Diego/Alt AU Diego.def, order = 1, previous=d, next=w, select=/s+a
+}
+Part 7/Blackmore/Blackmore.def, order = 1
+
+;PART 8
+
+;BONUS
+Bonus/Star Platinum/Star Platinum.def, order = 1
+Bonus/The World/The World.def, order = 1
+Bonus/American Idiot/American Idiot.def, order = 1
+Bonus/Shizuka Joestar/Shizuka Joestar.def, order = 1
+Bonus/Heaven DIO/Heaven DIO.def, order = 1
+Bonus/True Shadow/True Shadow.def, order = 1
+randomselect
+
+
+
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+empty
+
+;Random Select
+randomselect
+randomselect
+randomselect
+randomselect
+randomselect
+randomselect
+randomselect
+randomselect
+randomselect
+
+;NEW
+;New//.def, order = 1
+
+;Jokes
+Jokes\Uncle Joel\Uncle Joel.def,,order = 9
+Jokes\CLACKER VOLLEY\CLACKER VOLLEY.def,,order = 9
+Jokes\DOWN\DOWN.def,,order = 9
+Jokes\Hol Funtimes\Hol Funtimes.def,,order = 9
+Jokes\Silver Bullet\Silver Bullet.def,,order = 9
+Jokes\Famicom Jotaro\Famicom Jotaro.def, order = 9
+Jokes\NES Shadow DIO/NES Shadow DIO.def, order = 9
+Jokes\PS2 Diavolo\PS2 Diavolo.def, order = 9
+Jokes\Diavolo Daibouken\Diavolo Daibouken.def,,order = 9
+Jokes\Yutosine\Yutosine.def,,order = 9
+Jokes\Koichi Pose\Koichi Pose.def,,order = 9
+Jokes\Morioh Ambulance\Morioh Ambulance.def,,order = 9
+Jokes\Super Rubber Soul\Super Rubber Soul.def,,order = 9
+Jokes\Anubis Shiki/Anubis Shiki.def,,order = 9
+Jokes\Ronald\Ronald.def,,order = 9
+Jokes\DIOnaldo\DIOnaldo.def,,order = 9
+Jokes\DIO Undertale\DIO Undertale.def,,order = 9
+Jokes\Luigi Brando\Luigi Brando.def,,order = 9
+Jokes\DIO Garfield\DIO Garfield.def,,order = 9
+Jokes\Dandy-J/Dandy-J.def,,order = 9
+Jokes\Kenshiro/Kenshiro.def,,order = 9
+Jokes\Sakuya Brando\Sakuya Brando.def,,order = 9
+Jokes\Shadow Sakuya\Shadow Sakuya.def,,order = 9
+Jokes\Final Sakuya\Final Sakuya.def,,order = 9
+Jokes\Kira and Ren\Kira and Ren.def,,order = 9
+Cut\Black Sabbath\Black Sabbath.def,,order = 9
+Cut\Limp Bizkit\Limp Bizkit.def,,order = 9
+
+Extra Game Modes/CatWalk/CatWalk.def, order = 9, hidden = 2, bonus = 1
+Extra Game Modes/DuckHunt/DuckHunt.def, order = 9, hidden = 2, bonus = 1
+
+;-------------------------------------------------------------------------------
+[ExtraStages]
+ ;Put extra stages here. They will be available in modes that allow selecting
+ ;stage manually. For example, you can insert "stages/mybg.def".
+ ;
+ ;Optional parameters may follow on the same line, separated by commas.
+ ;Each parameter has the form:
+ ;    paramname = paramvalue
+ ;where paramname is the name of the parameter type, and paramvalue is the value
+ ;to assign that parameter. The optional parameters are:
+ ;
+ ; - music<roundno>
+ ;   IKEMEN feature: Set the paramvalue to the music file path that should be
+ ;   used at the start of round. Music volume, loopstart and loopend values can
+ ;   follow, separated by spaces. Tracks will be played randomly from the
+ ;   available pool if multiple parameters have been assigned or bgmusic is
+ ;   present in the stage DEF file. Setting optional <roundno> (typed as number)
+ ;   decides round on which the music will be played (defaults to 1 if omitted)
+ ;
+ ; - musiclife
+ ;   IKEMEN feature: Set the paramvalue to the music file path that should be
+ ;   used when player's controlled character has (by default) less then 30% life
+ ;   during deciding round (only affects side that is at risk of being
+ ;   defeated). Further adjustments available via stage DEF file. Music volume,
+ ;   loopstart and loopend values can follow, separated by spaces.  Tracks will
+ ;   be played randomly from the available pool if multiple parameters have been
+ ;   assigned or bgmusic.life is present in the stage DEF file.
+ ;
+ ; - musicvictory
+ ;   IKEMEN feature: Set the paramvalue to the music file path that should kick
+ ;   in right after the final round K.O. and continue throughout the victory
+ ;   screen. Music volume, loopstart and loopend frame values can follow,
+ ;   separated by spaces. Tracks will be played randomly from the available pool
+ ;   if multiple parameters have been assigned or bgmusic.victory is present in
+ ;   the stage DEF file.
+ ;
+ ; - order
+ ;   IKEMEN feature: Set the paramvalue to the ordering priority to give the
+ ;   stage in Arcade and Time Attack modes. If there is at least 1 stage with
+ ;   assigned order, facing opponent with the exact order paramvalue will result
+ ;   in stage being randomly chosen from stages with the matching order. Stages
+ ;   can have multiple order parameters assigned at the same time.
+ ;
+ ; - unlock
+ ;   IKEMEN feature: paramvalue is executed as Lua code condition, right after
+ ;   new game mode is initiated and upon returning to main menu. If it evaluates
+ ;   to boolean 'true' the stage will become manually selectable. On 'false' it
+ ;   will be hidden. Due to parameters syntax, 'unlock' has to be the very last
+ ;   parameter used in line (everything that follows is treated as a pure Lua
+ ;   code). Default: true.
+ ;   https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-Info#lua_unlock
+ ;
+ ;Examples:
+ ; stages/mybg.def, music=sound/song.mp3, music=sound/song2.mp3
+ ; stages/mybg.def, order=3
+ ;
+ ;Insert your stages below.
+
+stages\Mittelbirge.def
+stages\Outside The Mansion.def
+stages\Joestar Residence.def
+stages\Dio's Castle.def
+stages\Aztec Ruins.def
+stages\NYC Alley.def
+stages\NYC Streets.def
+stages\German Base.def
+stages\Awakening.def
+stages\Air Supplena Island.def
+stages\Nazi Chalet.def
+stages\Misty Stairs.def
+stages\Caesar's Rest.def
+stages\Avalon.def
+stages\Kars Rock.def
+stages\Jotaro's Cell.def
+stages\Sickbay.def
+stages\Sickbay Night.def
+stages\Airplane.def
+stages\Tiger Balm Gardens.def
+stages\Hotel Room.def
+stages\Sewer.def
+stages\Cliffside.def
+stages\Deserted Town.def
+stages\Enya's Hotel.def
+stages\Dream World.def
+stages\Island Beach.def
+stages\Island Beach Night.def
+stages\Libya Desert.def
+stages\Desert Ruins.def
+stages\Calcutta.def
+stages\Tohth (Color).def
+stages\Paradise Alley.def
+stages\Alessi's Town.def
+stages\Moonlit Desert.def
+stages\Back Alley.def
+stages\Country Town.def
+stages\Dio's Mansion.def
+stages\The Lobby.def
+stages\Coffin Room.def
+stages\Clocktower.def
+stages\Cairo.def
+stages\Cairo Streets.def
+stages\Cairo Streets Dusk.def
+stages\Blue Moonlight.def
+stages\Red Moonlight.def
+stages\Owson.def
+stages\Morioh.def
+stages\Niji's House.def
+stages\Super Fly.def
+stages\The Tunnel.def
+stages\Mukadeya.def
+stages\Kira's House.def
+stages\Dead Man's Questions.def
+stages\Italy.def
+stages\Italy Streets.def
+stages\Naples.def
+stages\Riverside.def
+stages\Polpo's Cell.def
+stages\Passione Yacht.def
+stages\Train Station.def
+stages\Traintop Duel.def
+stages\Airport.def
+stages\Venice.def
+stages\Metallica.def
+stages\Rome.def
+stages\The Coliseum.def
+stages\Outside The Coliseum.def
+stages\Chariot Requiem.def
+stages\Chariot Requiem EX.def
+stages\G.D.ST Passage.def
+stages\Burning Down The House.def
+stages\Prison Yard.def
+stages\Ultra Security House Unit.def
+stages\Cytec Denka.def
+stages\Cape Canaveral.def
+stages\Bohemian Rhapsody.def
+stages\Steel Ball Run.def
+stages\Waterfalls.def
+stages\Philadelphia Coastline.def
+stages\Wall Eyes.def
+stages\Higashikata Mansion.def
+stages\The New Realm.def
+;stages\Tarrot Cards.def
+;stages\Polnareff Land.def
+;stages\Training.def
+stages\The JoJo Stage.def
+
+;-------------------------------------------------------------------------------
+[Options]
+ ;Here you set the maximum number of matches to fight before game ends in arcade
+ ;mode. The first number is the number of matches against characters with
+ ;order=1, followed by order=2 and order=3 respectively. For example, for 4,3,1
+ ;you will fight up to 4 randomly-picked characters who have order=1, followed
+ ;by 3 with order=2 and 1 with order=3.
+ ;IKEMEN feature: Max 30 orders mugen limitation is lifted.
+ ;IKEMEN feature: Characters can use individual maxmatches settings (see
+ ;'maxmatches' parameter in [Characters] section)
+
+ ;Maximum number of matches to fight before game ends in Arcade single mode.
+arcade.maxmatches = 6,1,1,0,0,0,0,0,0,0
+
+ ;Like arcade.maxmatches, but applies to Arcade team modes (sans 'Ratio').
+team.maxmatches = 4,1,1,0,0,0,0,0,0,0
+
+ ;Maximum number of matches to fight before game ends in Time Attack mode.
+timeattack.maxmatches = 6,1,1,0,0,0,0,0,0,0
+
+ ;IKEMEN feature: Similar to arcade.maxmatches, but applies to Survival mode.
+ ;Use -1 value to choose which order number should have unlimited matches.
+ ;By omitting -1 survival mode will end after particular amount of matches set
+ ;below (in such case you can actually "complete" the mode).
+survival.maxmatches = -1,0,0,0,0,0,0,0,0,0
+
+ ;IKEMEN feature: A 'Ratio' mode allows each team to select up to 3 characters
+ ;and distribute 4 "ratio levels" amongst them, affecting their life and damage
+ ;(ratio 2 is the default to which other ratios are compared, percentages are
+ ;adjustable in options screen).
+ ;Arcade ratio matches use 'ratiomatches' configuration instead of 'maxmatches'
+ ;settings. Each entry here, separated by commas, represents a single match and
+ ;consists of 2 assignments, separated by colon. Assignment on the left side of
+ ;colon refers to the number of characters you will face in this match (valid
+ ;numbers from 1 to 3, or a random selection range, consisting of one number,
+ ;followed by a dash and another number). Assignment written after colon refers
+ ;to character's order param, that can be used to limit which characters should
+ ;be randomly chosen for this match. For example 2-3:4 entry means a match
+ ;against team of 2 or 3 characters, chosen from characters with order=4.
+arcade.ratiomatches = 1-3:1, 3:1, 2:1, 2:1, 1:2, 3:1, 1-2:3
+
+ ;AI ramping
+ ;IKEMEN feature: AI ramping settings has been moved here from mugen.cfg
+ ;You can view AI ramping output for all battles from the last chosen mode via
+ ;debug/t_aiRamp.txt (useful reference also for vanilla mugen).
+
+ ;Arcade / Time Attack single mode AI ramping
+ ;For both parameters below, the first number corresponds to the number of
+ ;matches won, and the second number to the AI difficulty offset. The actual
+ ;difficulty is the sum of the AI difficulty level (set in the options menu) and
+ ;the value of the offset at a particular match.
+ ;  AIramp.start = start_match, start_diff
+ ;  AIramp.end   = end_match, end_diff
+ ;The difficulty offset function is a constant value of start_diff from the
+ ;first match until start_match matches have been won. From then the offset
+ ;value increases linearly from start_diff to end_diff. After end_diff matches
+ ;have been won, the offset value is end_diff.
+ ;  e_d            /----------
+ ;               /
+ ;  s_d _______/
+ ;     ^      ^     ^        ^
+ ;   1st_m   s_m   e_m     last_m
+ ;For example, if you have:
+ ;  AIramp.start = 2,0
+ ;  AIramp.end   = 4,2
+ ;For 6 matches at level 4, the difficulty will be (by match):
+ ;  4,4,4,5,6,6
+
+arcade.AIramp.start = 2, 0
+arcade.AIramp.end   = 4, 2
+
+ ;Arcade / Time Attack team modes AI ramping (sans 'Ratio')
+ ;For 4 matches at level 4 and default values, the difficulty will be:
+ ;  4,4,5,6
+
+team.AIramp.start = 1, 0
+team.AIramp.end   = 3, 2
+
+ ;Arcade / Time Attack 'Ratio' mode AI ramping
+ ;For 4 matches at level 4 and default values, the difficulty will be:
+ ;  4,4,5,6
+
+ratio.AIramp.start = 1, 0
+ratio.AIramp.end   = 3, 2
+
+ ;Survival Mode AI ramping
+ ;For 16 matches at level 4 and default values, the difficulty will be:
+ ;  1,1,1,2,2,3,3,4,4,4,5,5,6,6,7,7,8
+
+survival.AIramp.start = 0, -3
+survival.AIramp.end   = 16, 4
+
+;-------------------------------------------------------------------------------
+[StoryMode]
+ ;Story Mode arcs declaration. Assigned arcs are selectable via Story Mode
+ ;submenu ('menu.itemname.storymode' parameter in screenpack DEF file)
+ ;
+ ;Declaring arcs consists of setting up following parameters:
+ ; - name
+ ;   IKEMEN feature: Set to name that should be returned by GameMode trigger.
+ ;   This parameter also initiates new story arc declaration, so it has to be
+ ;   assigned before any other parameter used by the same arc. All arcs should
+ ;   have unique names.
+ ;
+ ; - displayname
+ ;   IKEMEN feature: Set to name that should be displayed in Story Mode submenu.
+ ;
+ ; - path
+ ;   IKEMEN feature: Path to file with lua extension (relative to game
+ ;   directory), containing story mode arc coded in Lua language.
+ ;   https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-Info#arcs
+ ;
+ ; - unlock
+ ;   IKEMEN feature: Pure Lua code, executed exactly as is, each time upon
+ ;   loading main menu. If it evaluates to boolean 'true' the story arc will be
+ ;   selectable from story mode submenu, or hidden on 'false'. Default: true.
+ ;   https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-Info#lua_unlock
+ ;
+ ;Examples:
+ ; name = arc1
+ ; displayname = Kung Fu Story Part I
+ ; path = data/story/arc1.lua
+ ; unlock = true
+ ;
+ ; name = arc2
+ ; displayname = Kung Fu Story Part II
+ ; path = data/story/arc2.lua
+ ; unlock = true
+ ;
+ ;Declare your Story Mode arcs below.
+
