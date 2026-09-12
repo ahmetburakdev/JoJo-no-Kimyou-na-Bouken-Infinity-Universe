@@ -11,6 +11,8 @@ Motor: IKEMEN GO (MIT Lisansı)
 
 © 2026 JoJo no Kimyou na Bouken: Infinity Universe - Ahmet Burak Y. (NB)
 
+BURADAN İNDİREBİLİRSİNİZ: https://mega.nz/folder/XWZVCLRK#pgX52VFVcosUMlN1uCCxTA
+
 ==
 
 JoJo no Kimyou na Bouken: Infinity Universe
@@ -25,3 +27,5 @@ The characters are my own creations.
 Engine: IKEMEN GO (MIT License)
 
 © 2026 JoJo no Kimyou na Bouken: Infinity Universe - Ahmet Burak Y. (NB)
+
+YOU CAN DOWNLOAD HERE: https://mega.nz/folder/XWZVCLRK#pgX52VFVcosUMlN1uCCxTA
