@@ -1,0 +1,32 @@
+# JoJo no Kimyou na Bouken: Infinity Universe
+
+## English
+A fan-made fighting game based on JoJo's Bizarre Adventure, built with the IKEMEN GO engine.
+Features characters from all JoJo parts, online play support, and custom screenpack.
+
+**How to play:**
+1. Download the game from the link below
+2. Extract the ZIP file
+3. Run "INFINITE UNIVERSE.exe"
+4. Enjoy!
+
+Download: https://mega.nz/folder/XWZVCLRK#pgX52VFVcosUMlN1uCCxTA
+
+---
+
+## Türkçe
+IKEMEN GO motoru kullanılarak yapılmış JoJo's Bizarre Adventure fan oyunu.
+Tüm JoJo partlarından karakterler, online oyun desteği ve özel screenpack içerir.
+
+**Nasıl oynanır:**
+1. Aşağıdaki linkten oyunu indir
+2. ZIP dosyasını çıkart
+3. "INFINITE UNIVERSE.exe" çalıştır
+4. İyi oyunlar!
+
+İndirme: https://mega.nz/folder/XWZVCLRK#pgX52VFVcosUMlN1uCCxTA
+
+---
+
+Made by Ahmet Burak Y. (NB) - 2026
+Powered by IKEMEN GO (MIT License)
